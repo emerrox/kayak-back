@@ -6,7 +6,7 @@ const db = require("../db");
 router.post("/", (req, res) => {
   const { name } = req.body;
 
-  const query = "INSERT INTO groups (name) VALUES (?)";
+  const query = "INSERT INTO groups_data (name) VALUES (?)";
   db.query(query, [name], (err, result) => {
     if (err) {
       console.error(err);
