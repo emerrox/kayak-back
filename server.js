@@ -51,29 +51,31 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+console.log('sisisi');
+
 // Configuración de la base de datos MySQL
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+// const db = mysql.createConnection({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+// });
 
-// Conectar a la base de datos MySQL
-db.connect((err) => {
-  if (err) {
-    console.error('Error de conexión a la base de datos:', err);
-    return;
-  }
-  console.log('Conectado a la base de datos MySQL');
-});
+// // Conectar a la base de datos MySQL
+// db.connect((err) => {
+//   if (err) {
+//     console.error('Error de conexión a la base de datos:', err);
+//     return;
+//   }
+//   console.log('Conectado a la base de datos MySQL');
+// });
 
-// Ruta de prueba para comprobar que el servidor está funcionando
-app.get('/', (req, res) => {
-  res.send('¡Hola, el servidor está funcionando correctamente!');
-});
+// // Ruta de prueba para comprobar que el servidor está funcionando
+// app.get('/', (req, res) => {
+//   res.send('¡Hola, el servidor está funcionando correctamente!');
+// });
 
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+// // Iniciar el servidor
+// app.listen(port, () => {
+//   console.log(`Servidor corriendo en http://localhost:${port}`);
+// });
