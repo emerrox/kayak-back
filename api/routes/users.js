@@ -2,13 +2,11 @@ const { Router } = require('express');
 const { readJSON, writeJSON } = require('../utils');
 const router = Router();
 
-// Ruta para obtener todos los usuarios
 router.get('/', (req, res) => {
   const users = readJSON('users.json');
   res.json(users);
 });
 
-// Ruta para obtener un usuario por ID
 router.get('/:id', (req, res) => {
   const users = readJSON('users.json');
   const user = users.find(u => u.id === req.params.id);
@@ -27,7 +25,6 @@ router.get('/:id', (req, res) => {
   }
 });
 
-// Ruta para crear un nuevo usuario
 router.post('/', (req, res) => {
   const users = readJSON('users.json');
   const { name, email } = req.body;
@@ -41,11 +38,15 @@ router.post('/', (req, res) => {
   res.status(201).json(newUser);
 });
 
-// Ruta para eliminar un usuario por ID
 router.delete('/:id', (req, res) => {
   let users = readJSON('users.json');
   users = users.filter(u => u.id !== req.params.id);
   writeJSON('users.json', users);
+
+  let users_g = readJSON('groups_users.json');
+  users_g = users_g.filter(u => u.userId !== req.params.id);
+  writeJSON('groups_users.json', users_g);
+
   res.json({ message: 'Usuario eliminado' });
 });
 
