@@ -1,13 +1,13 @@
 const { Router } = require('express');
 const { readJSON, writeJSON } = require('../utils');
+const authenticate = require('./login');
 const router = Router();
-
-router.get('/', (req, res) => {
+router.get('/', authenticate, (req, res) => {
   const users = readJSON('users.json');
   res.json(users);
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', authenticate, (req, res) => {
   const users = readJSON('users.json');
   const user = users.find(u => u.id === req.params.id);
   if (user) {
@@ -15,7 +15,7 @@ router.get('/:id', (req, res) => {
     let group = []
     groups.map((g)=>{
       if (g.userId==req.params.id) {
-        group.push(g.groupId)
+        group.push(g)
       }
     })
     user.groups = group
@@ -25,7 +25,7 @@ router.get('/:id', (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
   const users = readJSON('users.json');
   const { name, email } = req.body;
   const newUser = {
@@ -38,7 +38,7 @@ router.post('/', (req, res) => {
   res.status(201).json(newUser);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', authenticate, (req, res) => {
   let users = readJSON('users.json');
   users = users.filter(u => u.id !== req.params.id);
   writeJSON('users.json', users);
