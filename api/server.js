@@ -12,10 +12,8 @@ app.use('/api/groups', groupsRoutes);
 app.use('/api/groups_users', groupsUsersRoutes);
 
 // Iniciar el servidor (solo para desarrollo local)
-if (process.env.NODE_ENV !== 'production') {
   app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
   });
-}
 
 module.exports = app;
