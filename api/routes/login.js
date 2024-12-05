@@ -5,7 +5,7 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'clave-secreta-por-defecto';
 
 // Ruta para iniciar sesión
-router.post('/', (req, res) => {
+router.get('/', (req, res) => {
   const { email } = req.body;
 
   // Buscar usuario
