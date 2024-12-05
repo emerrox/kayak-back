@@ -1,13 +1,14 @@
 const { Router } = require('express');
 const { readJSON, writeJSON } = require('../utils');
+const authenticate = require('../authenticate'); 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get('/', authenticate, (req, res) => {
   const groups = readJSON('groups.json');
   res.json(groups);
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', authenticate, (req, res) => {
   const groups = readJSON('groups.json')
   const group = groups.find(g => g.id === req.params.id);
   if (group) {
@@ -28,7 +29,7 @@ router.get('/:id', (req, res) => {
 /***** TO DO ******/
 // falta que al crear el grupo se añada el usuario que lo crea
 // Ruta para crear un nuevo grupo
-router.post('/', (req, res) => {
+router.post('/', authenticate, (req, res) => {
   const groups = readJSON('groups.json')
   const { name } = req.body;
   const newGroup = {
@@ -40,7 +41,7 @@ router.post('/', (req, res) => {
   res.status(201).json(newGroup);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', authenticate, (req, res) => {
   let groups = readJSON('groups.json')
   groups = groups.filter(g => g.id !== req.params.id);
   writeJSON('groups.json', groups)
