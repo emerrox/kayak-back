@@ -1,7 +1,8 @@
-const { Router } = require('express');
 const { readJSON, writeJSON } = require('../utils');
-const authenticate = require('./login');
+const authenticate = require('../authenticate'); 
+const { Router } = require('express');
 const router = Router();
+
 router.get('/', authenticate, (req, res) => {
   const users = readJSON('users.json');
   res.json(users);

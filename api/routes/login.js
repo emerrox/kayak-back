@@ -1,11 +1,12 @@
 const express = require('express');
+const { readJSON, writeJSON } = require('../utils');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'clave-secreta-por-defecto';
 
 // Ruta para iniciar sesión
-router.get('/', (req, res) => {
+router.post('/', (req, res) => {
   const { email } = req.body;
 
   // Buscar usuario
