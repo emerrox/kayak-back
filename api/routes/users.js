@@ -13,6 +13,14 @@ router.get('/:id', (req, res) => {
   const users = readJSON('users.json');
   const user = users.find(u => u.id === req.params.id);
   if (user) {
+    const groups = readJSON('groups_users.json')
+    let group = []
+    groups.map((g)=>{
+      if (g.userId==req.params.id) {
+        group.push(g.groupId)
+      }
+    })
+    user.groups = group
     res.json(user);
   } else {
     res.status(404).json({ message: 'Usuario no encontrado' });
