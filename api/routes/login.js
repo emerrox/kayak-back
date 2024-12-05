@@ -9,13 +9,14 @@ router.get('/', (req, res) => {
   const { email } = req.body;
 
   // Buscar usuario
-  const user = readJSON('users.json').find((u) => u.email === email);
+  const users = readJSON('users.json')
+  const user = users.find((u) => u.email === email);
 
   if (!user) { 
     return res.status(401).json({ error: 'Credenciales inválidas' });
   }
 
-  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
+  const token = jwt.sign({ id: user.id, name: user.name }, JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRATION || '1h', // Duración del token
   });
 

@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
   const { name } = req.body;
   const newGroup = {
     id: (groups.length + 1).toString(),
-    name
+    name: name
   };
   groups.push(newGroup);
   writeJSON('groups.json',groups)
