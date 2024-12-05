@@ -10,9 +10,9 @@ const loginRoutes = require('./routes/login')
 const app = express();
 app.use(express.json());
 
-app.use(helmet());
-app.use(cors({ origin: 'https://tudominio.com' }));
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+// app.use(helmet());
+// app.use(cors({ origin: 'https://tudominio.com' }));
+// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 app.use('/api/users', usersRoutes);
 app.use('/api/groups', groupsRoutes);
