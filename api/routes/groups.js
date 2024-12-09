@@ -30,14 +30,18 @@ router.get('/:id', authenticate, (req, res) => {
 // falta que al crear el grupo se añada el usuario que lo crea
 // Ruta para crear un nuevo grupo
 router.post('/', authenticate, (req, res) => {
-  const groups = readJSON('groups.json')
   const { name } = req.body;
+
+  
+  const groups = readJSON('groups.json')
   const newGroup = {
     id: (groups.length + 1).toString(),
     name: name
   };
   groups.push(newGroup);
   writeJSON('groups.json',groups)
+
+
   res.status(201).json(newGroup);
 });
 
