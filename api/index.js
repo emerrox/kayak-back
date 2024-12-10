@@ -14,6 +14,7 @@ app.use(express.json());
 
 // app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
 const allowedOrigins = [
+  '*',
   'http://localhost:5173',       // Origen de desarrollo
   'https://kayak-plus.vercel.app' // Origen de producción
 ];
