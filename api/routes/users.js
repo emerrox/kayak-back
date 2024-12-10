@@ -1,6 +1,7 @@
-const { readJSON, writeJSON } = require('../utils');
-const authenticate = require('../authenticate'); 
-const { Router } = require('express');
+import { readJSON, writeJSON } from '../utils.js';
+import authenticate from '../authenticate.js';
+import { Router } from 'express';
+
 const router = Router();
 
 router.get('/', authenticate, (req, res) => {
@@ -12,14 +13,14 @@ router.get('/:id', authenticate, (req, res) => {
   const users = readJSON('users.json');
   const user = users.find(u => u.id === req.params.id);
   if (user) {
-    const groups = readJSON('groups_users.json')
-    let group = []
-    groups.map((g)=>{
-      if (g.userId==req.params.id) {
-        group.push(g)
+    const groups = readJSON('groups_users.json');
+    let group = [];
+    groups.map((g) => {
+      if (g.userId == req.params.id) {
+        group.push(g);
       }
-    })
-    user.groups = group
+    });
+    user.groups = group;
     res.json(user);
   } else {
     res.status(404).json({ message: 'Usuario no encontrado' });
@@ -51,4 +52,4 @@ router.delete('/:id', authenticate, (req, res) => {
   res.json({ message: 'Usuario eliminado' });
 });
 
-module.exports = router;
+export default router;

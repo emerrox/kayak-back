@@ -2,6 +2,7 @@
   "name": "kayak-back",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "api/index.js",
   "scripts": {
     "dev": "nodemon server.js"

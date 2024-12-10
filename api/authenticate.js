@@ -1,4 +1,5 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'clave-secreta-por-defecto';  // Asegúrate de tener una clave secreta
 
 function authenticate(req, res, next) {
@@ -17,5 +18,4 @@ function authenticate(req, res, next) {
   }
 }
 
-
-module.exports = authenticate;
+export default authenticate;
