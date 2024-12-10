@@ -1,6 +1,7 @@
-const express = require('express');
-const { readJSON } = require('../utils');
-const { OAuth2Client } = require("google-auth-library"); // Asegúrate de importar correctamente
+import express from 'express';
+import { readJSON } from '../utils.js';
+import { OAuth2Client } from 'google-auth-library'; // Asegúrate de importar correctamente
+
 const router = express.Router();
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "743577440289-uokciaco2cu56pv6agdjo65p3q1qr2k2.apps.googleusercontent.com"; // Coloca aquí tu Client ID de Google
@@ -11,7 +12,7 @@ router.post('/', async (req, res) => {
   const { oauthToken } = req.body;
 
   if (!oauthToken) {
-    return res.status(400).json({ error: "El token de OAuth es requerido." });
+    return res.status(400).json({ error: "El token de OAuth es requerido. " + req.body });
   }
 
   try {
@@ -27,7 +28,6 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "No se pudo obtener el correo del usuario." });
     }
 
-
     /////// TO DO: cambiar a base de datos
 
     const users = readJSON('users.json');
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
     ////////
 
     if (!user) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+      return res.status(402).json({ error: 'Credenciales inválidas' });
     }
 
     res.cookie('authToken', oauthToken, {
@@ -53,4 +53,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
