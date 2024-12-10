@@ -12,12 +12,23 @@ const logoutRoutes = require('./routes/logout')
 const app = express();
 app.use(express.json());
 
-app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
+// app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
+const allowedOrigins = [
+  'http://localhost:5173',       // Origen de desarrollo
+  'https://kayak-plus.vercel.app' // Origen de producción
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173',  // Cambia esta URL por la de tu frontend
-  credentials: true,  // Permite el envío de cookies (importante para sesiones)
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true); // Permitir el origen
+    } else {
+      callback(new Error('Not allowed by CORS')); // Rechazar otros orígenes
+    }
+  },
+  credentials: true
 }));
-app.use(cookieParser());
+app.use(cookieParser())
 
 app.use('/api/users', usersRoutes);
 app.use('/api/groups', groupsRoutes);
