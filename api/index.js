@@ -13,22 +13,11 @@ const app = express();
 app.use(express.json());
 
 // app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
-const allowedOrigins = [
-  '*',
-  'http://localhost:5173',       // Origen de desarrollo
-  'https://kayak-plus.vercel.app' // Origen de producción
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true); // Permitir el origen
-    } else {
-      callback(new Error('Not allowed by CORS')); // Rechazar otros orígenes
-    }
-  },
+  origin: '*',
   credentials: true
 }));
+
 app.use(cookieParser())
 
 app.use('/api/users', usersRoutes);
