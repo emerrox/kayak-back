@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
   ];
   const authUrl = client.generateAuthUrl({
     access_type: 'offline', 
-    scope: 'https://www.googleapis.com/auth/calendar',
+    // scope: 'https://www.googleapis.com/auth/calendar',
   });
 
   res.redirect(authUrl);
