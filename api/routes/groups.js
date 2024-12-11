@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    const oAuth2Client = new google.auth.OAuth2();
+    const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
     oAuth2Client.setCredentials({ access_token: authToken });
 
     const groups = readJSON('groups.json');
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     const newCalendar = {
       summary: `Calendario de ${name}`,
       description: `Calendario asociado al grupo: ${name}`,
-      timeZone: 'España'
+      timeZone: 'Europe/Madrid'
     };
 
     const calendarResponse = await calendar.calendars.insert({

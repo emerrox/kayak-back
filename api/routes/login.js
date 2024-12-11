@@ -5,9 +5,29 @@ import { google } from 'googleapis';
 
 const router = express.Router();
 
-const client = new OAuth2Client(process.env.CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
+const client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
 
-router.post('/', async (req, res) => {
+const SCOPES = [
+  'https://www.googleapis.com/auth/calendar',
+  'https://www.googleapis.com/auth/calendar.events',
+  'https://www.googleapis.com/auth/calendar.events.readonly',
+  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/calendar.settings.readonly',
+  'https://www.googleapis.com/auth/admin.directory.resource.calendar',
+  'https://www.googleapis.com/auth/calendar.resources.readonly',
+];
+
+router.get('/', (req, res) => {
+  const authUrl = client.generateAuthUrl({
+    access_type: 'offline', 
+    scope: SCOPES,
+    redirect_uri: process.env.REDIRECT_URI
+  });
+
+  res.redirect(authUrl);
+});
+
+router.post('/callback', async (req, res) => {
   const { oauthToken } = req.body;
 
   if (!oauthToken) {
@@ -15,8 +35,11 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    const { tokens } = await client.getToken(oauthToken);
+    client.setCredentials(tokens);
+
     const ticket = await client.verifyIdToken({
-      idToken: oauthToken,
+      idToken: tokens.id_token,
       audience: process.env.CLIENT_ID,
     });
 
@@ -38,7 +61,7 @@ router.post('/', async (req, res) => {
       return res.status(402).json({ error: 'Credenciales inválidas' });
     }
 
-    res.cookie('authToken', oauthToken, {
+    res.cookie('authToken', tokens.access_token, {
         // httpOnly: true,
         secure: true, 
         sameSite: 'None',

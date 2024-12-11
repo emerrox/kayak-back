@@ -21,6 +21,7 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:5173',
       'http://localhost:5173/home',
+      'http://localhost/home:5173',
       'https://kayak-plus.vercel.app',
       'https://kayak-back.vercel.app',
       'https://kayak-plus.vercel.app/home'
