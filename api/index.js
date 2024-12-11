@@ -17,25 +17,29 @@ app.use(cookieParser());
 app.use(helmet.referrerPolicy({ policy: 'unsafe-url' }));
 app.use(cors({
   origin: (origin, callback) => {
-    const ACCEPTED_ORIGINS = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://localhost:5173/home',
-      'http://localhost/home:5173',
-      'https://kayak-plus.vercel.app',
-      'https://kayak-back.vercel.app',
-      'https://kayak-plus.vercel.app/home'
-    ];
+    const allowedFrontendDomain = 'kayak-plus.vercel.app';  // Dominio de frontend
+    const allowedBackendDomain = 'kayak-back.vercel.app';   // Dominio de backend
+    const googleDomain = 'accounts.google.com';             // Dominio de Google
 
-    if (ACCEPTED_ORIGINS.includes(origin)) {
-      return callback(null, true);
+    // Permitir todos los subdominios de kayak-plus.vercel.app (frontend)
+    if (!origin || origin.endsWith(allowedFrontendDomain)) {
+      callback(null, true); // Permite la solicitud
     }
 
-    if (!origin) {
-      return callback(null, true);
+    // Permitir todos los subdominios de kayak-back.vercel.app (backend)
+    else if (origin.endsWith(allowedBackendDomain)) {
+      callback(null, true); // Permite la solicitud
     }
 
-    return callback(new Error('Not allowed by CORS'));
+    // Permitir todos los subdominios de accounts.google.com (para OAuth)
+    else if (origin && origin.includes(googleDomain)) {
+      callback(null, true); // Permite la solicitud desde cualquier subdominio de google.com
+    }
+
+    // Si no coincide con ningún dominio permitido, rechaza la solicitud
+    else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
   credentials: true
 }));
