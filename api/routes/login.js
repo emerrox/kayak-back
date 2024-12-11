@@ -1,12 +1,11 @@
 import express from 'express';
 import { readJSON } from '../utils.js';
 import { OAuth2Client } from 'google-auth-library'; // Asegúrate de importar correctamente
+import { google } from 'googleapis';
 
 const router = express.Router();
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "743577440289-uokciaco2cu56pv6agdjo65p3q1qr2k2.apps.googleusercontent.com"; // Coloca aquí tu Client ID de Google
-
-const client = new OAuth2Client(CLIENT_ID);
+const client = new OAuth2Client(process.env.CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
 
 router.post('/', async (req, res) => {
   const { oauthToken } = req.body;
@@ -18,7 +17,7 @@ router.post('/', async (req, res) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: oauthToken,
-      audience: CLIENT_ID,
+      audience: process.env.CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -40,8 +39,9 @@ router.post('/', async (req, res) => {
     }
 
     res.cookie('authToken', oauthToken, {
-        httpOnly: true,
-        secure: false, 
+        // httpOnly: true,
+        secure: true, 
+        sameSite: 'None',
         maxAge: 1000 * 60 * 60, //
       })
       .status(200)
