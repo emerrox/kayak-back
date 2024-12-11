@@ -5,23 +5,22 @@ import { google } from 'googleapis';
 
 const router = express.Router();
 
-const client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
+const client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
 
-const SCOPES = [
-  'https://www.googleapis.com/auth/calendar',
-  'https://www.googleapis.com/auth/calendar.events',
-  'https://www.googleapis.com/auth/calendar.events.readonly',
-  'https://www.googleapis.com/auth/calendar.readonly',
-  'https://www.googleapis.com/auth/calendar.settings.readonly',
-  'https://www.googleapis.com/auth/admin.directory.resource.calendar',
-  'https://www.googleapis.com/auth/calendar.resources.readonly',
-];
 
 router.post('/', (req, res) => {
+  const SCOPES = [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/calendar.events',
+    'https://www.googleapis.com/auth/calendar.events.readonly',
+    'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/calendar.settings.readonly',
+    'https://www.googleapis.com/auth/admin.directory.resource.calendar',
+    'https://www.googleapis.com/auth/calendar.resources.readonly',
+  ];
   const authUrl = client.generateAuthUrl({
     access_type: 'offline', 
-    scope: SCOPES,
-    redirect_uri: process.env.REDIRECT_URI
+    scope: SCOPES
   });
 
   res.redirect(authUrl);
