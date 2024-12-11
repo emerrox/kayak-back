@@ -21,7 +21,6 @@ router.post('/', (req, res) => {
   const authUrl = client.generateAuthUrl({
     access_type: 'offline', 
     scope: 'https://www.googleapis.com/auth/calendar',
-    prompt: 'consent'
   });
 
   res.redirect(authUrl);
