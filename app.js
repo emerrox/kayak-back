@@ -52,7 +52,7 @@ app.use('/api/logout', logoutRoutes);
 app.use('/api/events', eventsRoutes);
 
 app.listen(process.env.PORT, () => {
-  console.log('Server running on http://localhost:3000');
+  console.log('Server running on ');
 });
 
 export default app;
