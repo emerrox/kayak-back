@@ -2,7 +2,8 @@ import { Router } from 'express';
 import authenticate from '../authenticate.js';
 import { google } from 'googleapis';
 import dbConnect from '../database.js';
-import User from '../models/User.js';
+import {User} from  '../models/Users.js';
+// import User from '../models/User.js';
 import Group from '../models/Group.js';
 import GroupsUsers from '../models/GroupsUsers.js';
 
