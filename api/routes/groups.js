@@ -2,10 +2,10 @@ import { Router } from 'express';
 import authenticate from '../authenticate.js';
 import { google } from 'googleapis';
 import dbConnect from '../database.js';
-import User from  '../models/Users.js';
+// import User from  '../models/Users.js';
 // import User from '../models/User.js';
-import Group from '../models/Groups.js';
-import GroupsUsers from '../models/GroupsUser.js';
+// import Group from '../models/Groups.js';
+// import GroupsUsers from '../models/GroupsUser.js';
 
 const router = Router();
 
@@ -39,65 +39,65 @@ router.get('/:id', authenticate, (req, res) => {
 });
 
 
-router.post('/', async (req, res) => {
-  const name = req.body.name;
-  const access_token = req.cookies.access_token;
-  const user_email = req.cookies.user_email;
+// router.post('/', async (req, res) => {
+//   const name = req.body.name;
+//   const access_token = req.cookies.access_token;
+//   const user_email = req.cookies.user_email;
 
-  if (!access_token || !user_email) {
-    return res.status(401).json({ error: 'Usuario no autenticado.' });
-  }
+//   if (!access_token || !user_email) {
+//     return res.status(401).json({ error: 'Usuario no autenticado.' });
+//   }
 
-  // Crear un nuevo OAuth2Client para esta solicitud
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET
-  );
-  oauth2Client.setCredentials({ access_token });
+//   // Crear un nuevo OAuth2Client para esta solicitud
+//   const oauth2Client = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET
+//   );
+//   oauth2Client.setCredentials({ access_token });
 
-  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-  const newCalendar = {
-    summary: `Calendario de ${name}`,
-    description: `Calendario asociado al grupo: ${name}`,
-    timeZone: 'Europe/Madrid',
-  };
+//   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+//   const newCalendar = {
+//     summary: `Calendario de ${name}`,
+//     description: `Calendario asociado al grupo: ${name}`,
+//     timeZone: 'Europe/Madrid',
+//   };
 
-  try {
-    await dbConnect();
-    // Crear el calendario
-    const calendarResponse = await calendar.calendars.insert({
-      requestBody: newCalendar,
-    });
+//   try {
+//     await dbConnect();
+//     // Crear el calendario
+//     const calendarResponse = await calendar.calendars.insert({
+//       requestBody: newCalendar,
+//     });
 
-    const calendarId = calendarResponse.data.id;
+//     const calendarId = calendarResponse.data.id;
 
-    let user = await User.findOne({ email: user_email });
-    if (!user) {
-      user = await User.create({ email: user_email, name: 'Sin nombre' });
-    }
+//     let user = await User.findOne({ email: user_email });
+//     if (!user) {
+//       user = await User.create({ email: user_email, name: 'Sin nombre' });
+//     }
 
-    // **3. Crear un nuevo grupo y almacenarlo en MongoDB**
-    const group = await Group.create({
-      name: name,
-      cal_id: calendarId,
-    });
+//     // **3. Crear un nuevo grupo y almacenarlo en MongoDB**
+//     const group = await Group.create({
+//       name: name,
+//       cal_id: calendarId,
+//     });
 
-    // **4. Relacionar el usuario con el grupo en Groups_Users**
-    await GroupsUsers.create({
-      userId: user._id,
-      groupId: group._id,
-    });
+//     // **4. Relacionar el usuario con el grupo en Groups_Users**
+//     await GroupsUsers.create({
+//       userId: user._id,
+//       groupId: group._id,
+//     });
 
-    res.status(201).json({
-      message: 'Grupo y calendario creados correctamente.',
-      group: group,
-      calendar: calendarResponse.data,
-    });
-  } catch (error) {
-    console.error('Error al crear el calendario:', error);
-    res.status(504).json({ error: 'Error al crear el calendario para el grupo.' });
-  }
-});
+//     res.status(201).json({
+//       message: 'Grupo y calendario creados correctamente.',
+//       group: group,
+//       calendar: calendarResponse.data,
+//     });
+//   } catch (error) {
+//     console.error('Error al crear el calendario:', error);
+//     res.status(504).json({ error: 'Error al crear el calendario para el grupo.' });
+//   }
+// });
 
 
 router.delete('/:id', authenticate, (req, res) => {
