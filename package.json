@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "app.js",
+  "main": "api/app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node api/app.js",
     "dev": "node app.js"
   },
   "keywords": [],
