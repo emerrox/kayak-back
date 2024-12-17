@@ -1,12 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import usersRoutes from './routes/users.js';
-import groupsRoutes from './routes/groups.js';
-import groupsUsersRoutes from './routes/groups_users.js';
-import loginRoutes from './routes/login.js';
-import logoutRoutes from './routes/logout.js';
-import eventsRoutes from './routes/events.js';
+import usersRoutes from './api/routes/users.js';
+import groupsRoutes from './api/routes/groups.js';
+import groupsUsersRoutes from './api/routes/groups_users.js';
+import loginRoutes from './api/routes/login.js';
+import logoutRoutes from './api/routes/logout.js';
+import eventsRoutes from './api/routes/events.js';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 
@@ -51,7 +51,7 @@ app.use('/api/login', loginRoutes);
 app.use('/api/logout', logoutRoutes);
 app.use('/api/events', eventsRoutes);
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   console.log('Server running on http://localhost:3000');
 });
 
