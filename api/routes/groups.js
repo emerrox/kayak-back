@@ -1,9 +1,18 @@
 import { Router } from 'express';
-import { readJSON, writeJSON } from '../utils.js';
 import authenticate from '../authenticate.js';
 import { google } from 'googleapis';
+import dbConnect from '../database.js';
+import User from '../models/User.js';
+import Group from '../models/Group.js';
+import GroupsUsers from '../models/GroupsUsers.js';
 
 const router = Router();
+
+// const oauth2Client = new google.auth.OAuth2(
+//   process.env.CLIENT_ID,
+//   process.env.CLIENT_SECRET,
+//   process.env.REDIRECT_URI
+// );
 
 router.get('/', authenticate, (req, res) => {
   const groups = readJSON('groups.json');
@@ -30,56 +39,74 @@ router.get('/:id', authenticate, (req, res) => {
 
 
 router.post('/', async (req, res) => {
-  const { name } = req.body;
-  const authToken = req.cookies.authToken;
-  console.log(req.cookies);
-  
-  if (!authToken) {
+  const name = req.body.name;
+  const access_token = req.cookies.access_token;
+  const user_email = req.cookies.user_email;
+
+  if (!access_token || !user_email) {
     return res.status(401).json({ error: 'Usuario no autenticado.' });
   }
 
+  // Crear un nuevo OAuth2Client para esta solicitud
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET
+  );
+  oauth2Client.setCredentials({ access_token });
+
+  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  const newCalendar = {
+    summary: `Calendario de ${name}`,
+    description: `Calendario asociado al grupo: ${name}`,
+    timeZone: 'Europe/Madrid',
+  };
+
   try {
-    const oAuth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
-    oAuth2Client.setCredentials({ access_token: authToken });
-
-    const groups = readJSON('groups.json');
-    const newGroup = {
-      id: (groups.length + 1).toString(),
-      name: name
-    };
-    groups.push(newGroup);
-    writeJSON('groups.json', groups);
-
-    const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
-    const newCalendar = {
-      summary: `Calendario de ${name}`,
-      description: `Calendario asociado al grupo: ${name}`,
-      timeZone: 'Europe/Madrid'
-    };
-
+    await dbConnect();
+    // Crear el calendario
     const calendarResponse = await calendar.calendars.insert({
-      requestBody: newCalendar
+      requestBody: newCalendar,
     });
 
-    newGroup.calendarId = calendarResponse.data.id;
-    writeJSON('groups.json', groups);
+    const calendarId = calendarResponse.data.id;
 
-    res.status(201).json({ group: newGroup, calendar: calendarResponse.data });
+    let user = await User.findOne({ email: user_email });
+    if (!user) {
+      user = await User.create({ email: user_email, name: 'Sin nombre' });
+    }
 
+    // **3. Crear un nuevo grupo y almacenarlo en MongoDB**
+    const group = await Group.create({
+      name: name,
+      cal_id: calendarId,
+    });
+
+    // **4. Relacionar el usuario con el grupo en Groups_Users**
+    await GroupsUsers.create({
+      userId: user._id,
+      groupId: group._id,
+    });
+
+    res.status(201).json({
+      message: 'Grupo y calendario creados correctamente.',
+      group: group,
+      calendar: calendarResponse.data,
+    });
   } catch (error) {
     console.error('Error al crear el calendario:', error);
-    res.status(500).json({ error: 'Error al crear el calendario para el grupo.' });
+    res.status(504).json({ error: 'Error al crear el calendario para el grupo.' });
   }
 });
 
-router.delete('/:id', authenticate, (req, res) => {
-  let groups = readJSON('groups.json');
-  groups = groups.filter(g => g.id !== req.params.id);
-  writeJSON('groups.json', groups);
 
-  let users_g = readJSON('groups_users.json');
+router.delete('/:id', authenticate, (req, res) => {
+  let groups = readJSON('groups');
+  groups = groups.filter(g => g.id !== req.params.id);
+  writeJSON('groups', groups);
+
+  let users_g = readJSON('groups_users');
   users_g = users_g.filter(u => u.groupId !== req.params.id);
-  writeJSON('groups_users.json', users_g);
+  writeJSON('groups_users', users_g);
 
   res.json({ message: 'Grupo eliminado' });
 });

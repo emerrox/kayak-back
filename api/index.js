@@ -6,6 +6,7 @@ import groupsRoutes from './routes/groups.js';
 import groupsUsersRoutes from './routes/groups_users.js';
 import loginRoutes from './routes/login.js';
 import logoutRoutes from './routes/logout.js';
+import eventsRoutes from './routes/events.js';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 
@@ -48,6 +49,7 @@ app.use('/api/groups', groupsRoutes);
 app.use('/api/groups_users', groupsUsersRoutes);
 app.use('/api/login', loginRoutes);
 app.use('/api/logout', logoutRoutes);
+app.use('/api/events', eventsRoutes);
 
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
