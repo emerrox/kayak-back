@@ -1,0 +1,35 @@
+{
+  "name": "kayak-back",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "api/app.js",
+  "scripts": {
+    "start": "node api/app.js",
+    "dev": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@railway/cli": "^3.20.0",
+    "@vercel/node": "^3.2.27",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "db-local": "^3.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "google-auth-library": "^9.15.0",
+    "googleapis": "^144.0.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mongoose": "^8.9.1",
+    "node-fetch": "^3.3.2",
+    "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
