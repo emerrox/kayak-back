@@ -1,6 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
-
+import dbConnect from '../database.js';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -26,7 +27,23 @@ router.post('/', async (req, res) => {
     const userInfo = await response.json();
 
     const userEmail = userInfo.email;
+    try {
+      const db = await dbConnect()
+      const usersQuery = `
+      SELECT id
+      FROM users
+      WHERE email = ?;
+    `;
+      const usersResult = await db.execute(usersQuery, [userEmail]);
+      const user = usersResult.rows.length
+      if (user < 1) {
+        db.execute("INSERT INTO users (id, email) values(?,?)",[crypto.randomUUID(),userEmail])
+      }
 
+    } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).json({ error: 'Error al procesar la autenticación.' });
+    }
     res
       .cookie('access_token', access_token, {
         secure: true, 

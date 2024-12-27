@@ -1,6 +1,6 @@
-import { readJSON } from "../utils";
+import dbConnect from '../database.js';
 
-export function createGroup ( name, calendarId ){
+export function createGroups ( name, calendarId ){
     const groups = readJSON('groups.json');
     const newGroup = {
       id: (groups.length + 1).toString(),
@@ -8,4 +8,13 @@ export function createGroup ( name, calendarId ){
       calendarId: calendarId
     };
     groups.push(newGroup);
+}
+
+export async function getFromGroups(groupId) {
+  const db = await dbConnect()
+  const groupQueryRes = await db.execute('SELECT * FROM groups where id = ?;',[groupId])
+  if (groupQueryRes.rows.length < 1) {
+    return null
+  }
+  return groupQueryRes.rows[0]  
 }

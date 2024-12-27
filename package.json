@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@railway/cli": "^3.20.0",
     "@vercel/node": "^3.2.27",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
