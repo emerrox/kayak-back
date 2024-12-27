@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import usersRoutes from './routes/users.js';
 import groupsRoutes from './routes/groups.js';
 import groupsUsersRoutes from './routes/groups_users.js';
 import loginRoutes from './routes/login.js';
@@ -45,7 +44,6 @@ app.use(cors({
 
 app.disable('x-powered-by');
 
-app.use('/api/users', usersRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/groupsUsers', groupsUsersRoutes);
 app.use('/api/login', loginRoutes);
@@ -53,8 +51,6 @@ app.use('/api/logout', logoutRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/invites', invitesRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log('Server running on ');
-});
+app.listen(process.env.PORT);
 
 export default app;
