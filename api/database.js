@@ -20,9 +20,6 @@ async function dbConnect() {
       authToken: TURSO_AUTH_TOKEN,
     });
 
-    // Probar la conexión inicial
-    await client.execute("SELECT 1;");
-
     cached.client = client;
     return client;
   } catch (error) {

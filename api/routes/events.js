@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getFromGroups } from '../controller/groups.js';
 import { getUserGroupsByEmail } from '../controller/groups_users.js';
-import { createGoogleCalendarClient, createServiceCalendar } from '../controller/calendar.js';
+import { createServiceCalendar } from '../controller/calendar.js';
 import { getUserRole } from '../controller/roles.js';
 import { getEmailFromToken } from '../controller/login.js';
 
