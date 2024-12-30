@@ -5,12 +5,13 @@ import { createServiceCalendar } from '../controller/calendar.js';
 import { getFromGroups } from '../controller/groups.js';
 import { getFromUsersByEmail } from '../controller/users.js';
 import { updateUserRoleByGroupId } from '../controller/roles.js';
+import { getEmailFromToken } from '../controller/login.js';
 
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const user_email = req.cookies.user_email;
+  const user_email = await getEmailFromToken(req.headers.authorization);
 
   if (!user_email) {
     return res.status(401).json({ error: 'Email not found.' });
@@ -42,11 +43,15 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async(req, res) => {
-  const user_email = req.cookies.user_email;
+  const user_email = await getEmailFromToken(req.headers.authorization);
   const invite_token = req.body.invite_token
   
-  if (!user_email || !invite_token) {
-    return res.status(401).json({ error: 'Email or token not found.' });
+  if (!user_email) {
+    return res.status(401).json({ error: 'Email not found.' });
+  }
+
+  if (!invite_token) {
+    return res.status(400).json({ error: 'Invite token not found.' });
   }
 
   try {
@@ -72,7 +77,7 @@ router.post('/', async(req, res) => {
 });
 
 router.delete('/', async(req, res) => {
-  const {user_email} = req.cookies;
+  const user_email = await getEmailFromToken(req.headers.authorization);
   const { groupId } = req.body;
   try {
     const db = await dbConnect();
@@ -83,7 +88,7 @@ router.delete('/', async(req, res) => {
     removeUserFromCalendar(calendar, group.calendar_id, user_email)
     await db.execute('DELETE FROM users_groups WHERE user_id = ? AND group_id = ?;', [user.id, groupId]);
     
-    res.status(200)
+    res.status(200).json({ message: 'Usuario eliminado del grupo correctamente.' });
   } catch (error) {
     console.log(error);
     res.status(400).json({error: error})
@@ -91,7 +96,7 @@ router.delete('/', async(req, res) => {
 });
 
 router.patch('/', async (req, res) => {
-  const userEmail = req.cookies.user_email;
+  const userEmail = await getEmailFromToken(req.headers.authorization);
   const { groupId, newRole, email } = req.body;
 
   if (!groupId || !userEmail || !newRole || !email) {
@@ -103,7 +108,7 @@ router.patch('/', async (req, res) => {
     
     if (success) {
       res.status(200).json({
-        message: `Rol actualizado correctamente a ${newRole} para el usuario ${userEmail}.`,
+        message: `Rol actualizado correctamente a ${newRole} para el usuario ${email}.`,
         role: newRole
       });
     } else {

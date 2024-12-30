@@ -3,11 +3,13 @@ import dbConnect from '../database.js';
 import crypto from 'crypto';
 import { shareCalendar } from '../controller/groups_users.js';
 import { createServiceCalendar } from '../controller/calendar.js';
+import { getEmailFromToken } from '../controller/login.js';
+import { getUserRoleByGroupId } from '../controller/roles.js';
 const router = Router();
 
 router.post('/', async (req, res) => {
   const name = req.body.name;
-  const user_email = req.cookies.user_email;
+  const user_email = await getEmailFromToken(req.headers.authorization);
 
   if (!user_email) {
     return res.status(401).json({ error: 'Usuario no autenticado.' });
@@ -58,6 +60,16 @@ router.post('/', async (req, res) => {
 
 router.delete('/', async (req, res) => {
   const id = req.body.id;
+  const user_email = await getEmailFromToken(req.headers.authorization);
+  const role = getUserRoleByGroupId(id, user_email);
+
+  if (user_email === null) {
+    return res.status(403).json({ message: 'No tienes permisos para eliminar este grupo' });
+  }
+
+  if (role == 'reader') {
+    return res.status(403).json({ message: 'No tienes permisos para eliminar este grupo' });
+  }
 
   try {
     const db = await dbConnect();

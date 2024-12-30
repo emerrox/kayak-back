@@ -1,22 +1,22 @@
 import { Router } from 'express';
 import { getFromGroups } from '../controller/groups.js';
 import { getUserGroupsByEmail } from '../controller/groups_users.js';
-import { createGoogleCalendarClient } from '../controller/calendar.js';
+import { createGoogleCalendarClient, createServiceCalendar } from '../controller/calendar.js';
 import { getUserRole } from '../controller/roles.js';
+import { getEmailFromToken } from '../controller/login.js';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-    const access_token = req.cookies.access_token;
-    const user_email = req.cookies.user_email;
+    const user_email = await getEmailFromToken(req.headers.authorization);
     const events = [];
-    if (!access_token) {
+    if (!user_email) {
         return res.status(401).json({ message: "Access token no encontrado" });
     }
 
     try {
         const groupsQuery = await getUserGroupsByEmail(user_email)
-        const calendar = createGoogleCalendarClient(access_token)
+        const calendar = await createServiceCalendar()
 
         if (groupsQuery.length === 0) {
             return res.status(400).json({ message: "El usuario no pertenece a ningún grupo" });
@@ -55,13 +55,9 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const access_token = req.cookies.access_token;
-    const user_email = req.cookies.user_email;
+    const user_email = await getEmailFromToken(req.headers.authorization);
     const { group_id, event } = req.body;
 
-    if (!access_token) {
-        return res.status(401).json({ message: "Access token no encontrado" });
-    }
     console.log(event);
     
     try {
@@ -77,7 +73,7 @@ router.post('/', async (req, res) => {
             return res.status(403).json({ message: "No tienes permisos para crear eventos en este calendario" });
         }
 
-        const calendar = createGoogleCalendarClient(access_token);
+        const calendar = await createServiceCalendar()
 
         const newEvent = await calendar.events.insert({
             calendarId: calendar_id,
@@ -92,13 +88,8 @@ router.post('/', async (req, res) => {
 });
 
 router.delete('/', async (req, res) => {
-    const access_token = req.cookies.access_token;
-    const user_email = req.cookies.user_email;
+    const user_email = await getEmailFromToken(req.headers.authorization);
     const { group_id, event_id } = req.body;
-
-    if (!access_token) {
-        return res.status(401).json({ message: "Access token no encontrado" });
-    }
 
     try {
         const groupQuery = await getFromGroups(group_id);
@@ -113,7 +104,7 @@ router.delete('/', async (req, res) => {
             return res.status(403).json({ message: "No tienes permisos para eliminar eventos en este calendario" });
         }
 
-        const calendar = createGoogleCalendarClient(access_token);
+        const calendar = await createServiceCalendar();
 
         const deletedEvent = calendar.events.delete({
             calendarId: calendar_id,
@@ -128,13 +119,8 @@ router.delete('/', async (req, res) => {
 });
 
 router.patch('/', async (req, res) => {
-    const access_token = req.cookies.access_token;
-    const user_email = req.cookies.user_email;
+    const user_email = await getEmailFromToken(req.headers.authorization);
     const { group_id, event_id, event } = req.body;
-
-    if (!access_token) {
-        return res.status(401).json({ message: "Access token no encontrado" });
-    }
 
     try {
         const groupQuery = await getFromGroups(group_id);
@@ -149,7 +135,7 @@ router.patch('/', async (req, res) => {
             return res.status(403).json({ message: "No tienes permisos para editar eventos en este calendario" });
         }
 
-        const calendar = createGoogleCalendarClient(access_token);
+        const calendar = await createServiceCalendar();
 
         const updatedEvent = calendar.events.update({
             calendarId: calendar_id,
