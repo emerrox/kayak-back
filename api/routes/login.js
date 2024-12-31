@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import dbConnect from '../database.js';
 import { OAuth2Client } from 'google-auth-library';
+import { createUser } from '../controller/users.js';
 
 const router = express.Router();
 const CLIENT_ID = process.env.CLIENT_ID
@@ -32,7 +33,7 @@ router.post('/', async (req, res) => {
     const user = usersResult.rows.length ? usersResult.rows[0] : null;
 
     if (!user) {
-      return res.status(404).json({ error: "User not found." });
+      createUser(userEmail);
     }
 
     const token = jwt.sign({ email: userEmail }, 'skibidi-toilet', { expiresIn: '1h' });
