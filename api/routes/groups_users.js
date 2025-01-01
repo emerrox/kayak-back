@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     const db = await dbConnect();
 
     const query = `
-      SELECT g.id AS group_id, g.name AS group_name
+      SELECT g.id AS id, g.name AS name
       FROM users u
       INNER JOIN users_groups ug ON u.id = ug.user_id
       INNER JOIN groups g ON ug.group_id = g.id
@@ -34,13 +34,6 @@ router.get('/', async (req, res) => {
     if (groups.length === 0) {
       return res.status(404).json({ error: 'No groups found for this user.' });
     }
-
-    const res = groups.map((group) => {
-      return {
-        id: group.group_id,
-        name: group.group_name,
-      };
-    })
 
     res.status(200).json(res);
   } catch (error) {
