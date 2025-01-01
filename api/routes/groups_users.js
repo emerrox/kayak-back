@@ -35,7 +35,14 @@ router.get('/', async (req, res) => {
       return res.status(404).json({ error: 'No groups found for this user.' });
     }
 
-    res.status(200).json(groups);
+    const res = groups.map((group) => {
+      return {
+        id: group.group_id,
+        name: group.group_name,
+      };
+    })
+
+    res.status(200).json(res);
   } catch (error) {
     console.error('Error fetching groups:', error);
     res.status(500).json({ error: 'An error occurred while fetching groups.' });
