@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     const db = await dbConnect();
 
     const query = `
-      SELECT g.id AS id, g.name AS name
+      SELECT g.id AS id, g.name AS group_name
       FROM users u
       INNER JOIN users_groups ug ON u.id = ug.user_id
       INNER JOIN groups g ON ug.group_id = g.id
@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
       return res.status(404).json({ error: 'No groups found for this user.' });
     }
 
-    res.status(200).json(res);
+    res.status(200).json(groups);
   } catch (error) {
     console.error('Error fetching groups:', error);
     res.status(500).json({ error: 'An error occurred while fetching groups.' });
