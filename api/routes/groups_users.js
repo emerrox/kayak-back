@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     const db = await dbConnect();
 
     const query = `
-      SELECT g.id AS id, g.name AS group_name
+      SELECT g.id AS id, g.name AS name
       FROM users u
       INNER JOIN users_groups ug ON u.id = ug.user_id
       INNER JOIN groups g ON ug.group_id = g.id
