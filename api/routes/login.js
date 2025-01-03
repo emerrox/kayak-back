@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
     });
     const payload = ticket.getPayload();
     const userEmail = payload.email;
-
+    const userName = payload.name
     const db = await dbConnect();
     const usersQuery = `
       SELECT id
@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
 
     const token = jwt.sign({ email: userEmail }, 'skibidi-toilet', { expiresIn: '1h' });
 
-    res.json({ token });
+    res.json({ token, email: userEmail , name: userName});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error verifying the ID token." });
