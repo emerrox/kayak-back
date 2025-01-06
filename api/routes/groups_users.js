@@ -42,6 +42,29 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:groupId', async (req, res) => {
+  const user_email = await getEmailFromToken(req.headers.authorization);
+  const groupId = req.params.groupId;
+  if (!user_email) {
+    return res.status(401).json({ error: 'Email not found.' });
+  }
+
+  try {
+    const user = await getFromUsersByEmail(user_email);
+    const group = await getFromGroups(groupId);
+    const role = await getUserRoleByGroupId(groupId, user.id);
+
+    if (!group) {
+      return res.status(404).json({ error: 'Group not found.' });
+    }
+
+    res.status(200).json({ ...group, role });
+  } catch (error) {
+    console.error('Error fetching groups:', error);
+    res.status(500).json({ error: 'An error occurred while fetching group.' });
+  }
+});
+
 router.post('/', async(req, res) => {
   const user_email = await getEmailFromToken(req.headers.authorization);
   const invite_token = req.body.invite_token
