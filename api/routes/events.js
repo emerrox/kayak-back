@@ -58,7 +58,6 @@ router.post('/', async (req, res) => {
     const user_email = await getEmailFromToken(req.headers.authorization);
     const { group_id, event } = req.body;
 
-    console.log(event);
     
     try {
         const groupQuery = await getFromGroups(group_id);

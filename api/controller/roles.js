@@ -23,7 +23,6 @@ export async function getUserRoleByGroupId(groupId, email) {
     try {
         const group = await getFromGroups(groupId)
         const calendarId= group.calendar_id
-        console.log(calendarId);
 
         // Recuperar el rol del usuario en el calendario
         const res = await getUserRole(calendarId, email);
@@ -50,7 +49,6 @@ export async function updateUserRole(calendarId, email, role) {
         },
         });
 
-        console.log(`Rol del usuario ${email} actualizado a ${role} en el calendario ${calendarId}.`);
         return true;
     } catch (error) {
         console.error(`Error al actualizar el rol del usuario ${email}:`, error.message);

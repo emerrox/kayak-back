@@ -9,7 +9,6 @@ const router = express.Router();
 router.post('/',async(req,res)=>{
     const {groupId, usesRemaining} = req.body;
     const user_email = await getEmailFromToken(req.headers.authorization);
-    console.log('aqui1');
     
     const role = await getUserRoleByGroupId(groupId, user_email)
     

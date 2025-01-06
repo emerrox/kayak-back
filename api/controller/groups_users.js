@@ -8,7 +8,6 @@ export async function removeUserFromCalendar( calendar, calendarId, userEmail) {
         calendarId: calendarId,
         ruleId: `user:${userEmail}`,
       });
-      console.log(`Access revoked for user: ${userEmail}`);
   } catch (error) {
     console.error('Error removing user from calendar:', error);
     return error
