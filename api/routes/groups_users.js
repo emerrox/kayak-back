@@ -4,7 +4,7 @@ import { addUserToGroup, removeUserFromCalendar, shareCalendar } from '../contro
 import { createServiceCalendar } from '../controller/calendar.js';
 import { getFromGroups } from '../controller/groups.js';
 import { getFromUsersByEmail } from '../controller/users.js';
-import { updateUserRoleByGroupId } from '../controller/roles.js';
+import { getUserRoleByGroupId, updateUserRoleByGroupId } from '../controller/roles.js';
 import { getEmailFromToken } from '../controller/login.js';
 
 
