@@ -3,7 +3,7 @@ import dbConnect from '../database.js';
 import { addUserToGroup, removeUserFromCalendar, shareCalendar } from '../controller/groups_users.js';
 import { createServiceCalendar } from '../controller/calendar.js';
 import { getFromGroups } from '../controller/groups.js';
-import { getFromUsersByEmail } from '../controller/users.js';
+import { createUser, getFromUsersByEmail } from '../controller/users.js';
 import { getUserRoleByGroupId, updateUserRoleByGroupId } from '../controller/roles.js';
 import { getEmailFromToken } from '../controller/login.js';
 
@@ -50,15 +50,30 @@ router.get('/:groupId', async (req, res) => {
   }
 
   try {
-    const user = await getFromUsersByEmail(user_email);
     const group = await getFromGroups(groupId);
-    const role = await getUserRoleByGroupId(groupId, user.id);
+    const role = await getUserRoleByGroupId(groupId, user_email);
 
     if (!group) {
       return res.status(404).json({ error: 'Group not found.' });
     }
 
-    res.status(200).json({ ...group, role });
+    const usersQuery = `
+      SELECT u.email, u.id, u.name
+      FROM users u
+      JOIN users_groups gu ON u.id = gu.user_id
+      WHERE gu.group_id = ?;
+    `;
+    const db = await dbConnect();
+    const usersResult = await db.execute(usersQuery, [groupId]);
+    const users = usersResult.rows;
+
+    // Obtener el rol de cada usuario
+    const usersWithRoles = await Promise.all(users.map(async (user) => {
+      const userRole = await getUserRoleByGroupId(groupId, user.email);
+      return {id:user.id, email: user.email, name: user.name, role: userRole };
+    }));
+
+    res.status(200).json({ ...group, role, users: usersWithRoles, prueba: 'prueba' });
   } catch (error) {
     console.error('Error fetching groups:', error);
     res.status(500).json({ error: 'An error occurred while fetching group.' });
@@ -68,6 +83,7 @@ router.get('/:groupId', async (req, res) => {
 router.post('/', async(req, res) => {
   const user_email = await getEmailFromToken(req.headers.authorization);
   const invite_token = req.body.invite_token
+  const name = req.body.name
   
   if (!user_email) {
     return res.status(401).json({ error: 'Email not found.' });
@@ -86,7 +102,7 @@ router.post('/', async(req, res) => {
       return res.status(404).json({ error: 'Invalid or expired invite link.' });
     }
 
-    let user = await getFromUsersByEmail(user_email) || await createUser(user_email);
+    let user = await getFromUsersByEmail(user_email) || await createUser(user_email, name);
     const group = await getFromGroups(invite.group_id)
 
     shareCalendar(group.calendar_id, user_email, 'reader')
@@ -100,15 +116,18 @@ router.post('/', async(req, res) => {
 });
 
 router.delete('/', async(req, res) => {
-  const user_email = await getEmailFromToken(req.headers.authorization);
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'token not found.' });
+  }
   const { groupId } = req.body;
+  const { email } = req.body;
   try {
     const db = await dbConnect();
-    const user = await getFromUsersByEmail(user_email);
+    const user = await getFromUsersByEmail(email);
     const group = await getFromGroups(groupId);
     const calendar = await createServiceCalendar()
 
-    removeUserFromCalendar(calendar, group.calendar_id, user_email)
+    removeUserFromCalendar(calendar, group.calendar_id, email )
     await db.execute('DELETE FROM users_groups WHERE user_id = ? AND group_id = ?;', [user.id, groupId]);
     
     res.status(200).json({ message: 'Usuario eliminado del grupo correctamente.' });

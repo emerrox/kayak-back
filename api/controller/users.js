@@ -1,5 +1,5 @@
 import dbConnect from '../database.js';
-
+import crypto from 'crypto';
 export async function getFromUsers(userId) {
     const db = await dbConnect()
     const groupQueryRes = await db.execute('SELECT * FROM users where id = ?;',[userId])
@@ -18,9 +18,9 @@ export async function getFromUsersByEmail(email) {
     return groupQueryRes.rows[0]  
 }
 
-export async function createUser(email) {
+export async function createUser(email, name) {
     const db = await dbConnect()
     const id = crypto.randomUUID()
-    await db.execute("INSERT INTO users (id, email) values(?,?)",[id, email])
+    await db.execute("INSERT INTO users (id, email, name) values(?,?,?)",[id, email, name])
     return {id:id,email:email}
 }
