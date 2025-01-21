@@ -41,6 +41,7 @@ router.get('/', async (req, res) => {
                 start: event.start.dateTime || event.start.date,
                 end: event.end.dateTime || event.end.date,
                 role: role,
+                extendedProperties: event.extendedProperties || {},
             }));
     
             events.push(...formattedEvents); 
